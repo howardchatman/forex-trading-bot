@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forex Trading Bot - Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-left">
+                <h1><i class="fas fa-chart-line"></i> Forex Trading Bot</h1>
+                <span class="environment-badge" id="environment-badge">PRACTICE</span>
+            </div>
+            <div class="header-right">
+                <div class="trading-status">
+                    <span id="trading-status-text">Trading Active</span>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="trading-toggle" checked>
+                        <label for="trading-toggle"></label>
+                    </div>
+                </div>
+                <div class="last-update">
+                    Last Update: <span id="last-update">--</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="dashboard-content">
+            <!-- Account Overview -->
+            <section class="section account-overview">
+                <h2><i class="fas fa-wallet"></i> Account Overview</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Balance</div>
+                        <div class="stat-value" id="account-balance">$0.00</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">NAV</div>
+                        <div class="stat-value" id="account-nav">$0.00</div>
+                    </div>
+                    <div class="stat-card positive">
+                        <div class="stat-label">Unrealized P/L</div>
+                        <div class="stat-value" id="unrealized-pl">$0.00</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Margin Used</div>
+                        <div class="stat-value" id="margin-used">$0.00</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Margin Available</div>
+                        <div class="stat-value" id="margin-available">$0.00</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Risk Management -->
+            <section class="section risk-management">
+                <h2><i class="fas fa-shield-alt"></i> Risk Management</h2>
+                <div class="risk-grid">
+                    <div class="risk-card">
+                        <div class="risk-header">
+                            <span>Daily P/L</span>
+                            <span class="risk-value" id="daily-pnl">$0.00</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="daily-progress"></div>
+                        </div>
+                        <div class="risk-info">
+                            <span id="daily-percent">0%</span> of <span id="daily-limit">5%</span> limit
+                        </div>
+                    </div>
+                    <div class="risk-card">
+                        <div class="risk-header">
+                            <span>Weekly P/L</span>
+                            <span class="risk-value" id="weekly-pnl">$0.00</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="weekly-progress"></div>
+                        </div>
+                        <div class="risk-info">
+                            <span id="weekly-percent">0%</span> of <span id="weekly-limit">10%</span> limit
+                        </div>
+                    </div>
+                    <div class="risk-card">
+                        <div class="risk-header">
+                            <span>Positions</span>
+                            <span class="risk-value" id="positions-count">0/5</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="positions-progress"></div>
+                        </div>
+                        <div class="risk-info">
+                            Risk per trade: <span id="risk-per-trade">2%</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Live Charts -->
+            <section class="section live-charts">
+                <h2><i class="fas fa-chart-area"></i> Live Price Charts</h2>
+                <div class="charts-container">
+                    <!-- EUR/USD Chart -->
+                    <div class="chart-widget">
+                        <div class="tradingview-widget-container">
+                            <div id="tradingview_eurusd"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Open Positions -->
+            <section class="section open-positions">
+                <h2><i class="fas fa-briefcase"></i> Open Positions</h2>
+                <div class="table-container">
+                    <table id="positions-table">
+                        <thead>
+                            <tr>
+                                <th>Instrument</th>
+                                <th>Side</th>
+                                <th>Units</th>
+                                <th>Avg Price</th>
+                                <th>P/L</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="positions-body">
+                            <tr class="no-data">
+                                <td colspan="6">No open positions</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Recent Signals & Manual Trade -->
+            <div class="two-column">
+                <!-- Recent Signals -->
+                <section class="section recent-signals">
+                    <h2><i class="fas fa-signal"></i> Recent Signals</h2>
+                    <div class="signals-list" id="signals-list">
+                        <div class="no-data">No recent signals</div>
+                    </div>
+                </section>
+
+                <!-- Manual Trade -->
+                <section class="section manual-trade">
+                    <h2><i class="fas fa-hand-pointer"></i> Manual Trade</h2>
+                    <form id="manual-trade-form">
+                        <div class="form-group">
+                            <label>Action</label>
+                            <select id="trade-action" required>
+                                <option value="buy">Buy</option>
+                                <option value="sell">Sell</option>
+                                <option value="close">Close</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Instrument</label>
+                            <select id="trade-instrument" required>
+                                <option value="">Select Instrument...</option>
+                                <optgroup label="Forex Pairs">
+                                    <option value="EUR_USD">EUR/USD - Euro / US Dollar</option>
+                                    <option value="GBP_USD">GBP/USD - British Pound / US Dollar</option>
+                                    <option value="USD_JPY">USD/JPY - US Dollar / Japanese Yen</option>
+                                    <option value="USD_CHF">USD/CHF - US Dollar / Swiss Franc</option>
+                                    <option value="AUD_USD">AUD/USD - Australian Dollar / US Dollar</option>
+                                    <option value="USD_CAD">USD/CAD - US Dollar / Canadian Dollar</option>
+                                    <option value="NZD_USD">NZD/USD - New Zealand Dollar / US Dollar</option>
+                                    <option value="EUR_GBP">EUR/GBP - Euro / British Pound</option>
+                                    <option value="EUR_JPY">EUR/JPY - Euro / Japanese Yen</option>
+                                    <option value="GBP_JPY">GBP/JPY - British Pound / Japanese Yen</option>
+                                </optgroup>
+                                <optgroup label="Futures">
+                                    <option value="ES">ES - E-mini S&P 500 Futures</option>
+                                    <option value="NQ">NQ - E-mini NASDAQ-100 Futures</option>
+                                    <option value="YM">YM - E-mini Dow Futures</option>
+                                    <option value="RTY">RTY - E-mini Russell 2000 Futures</option>
+                                    <option value="CL">CL - Crude Oil Futures</option>
+                                    <option value="GC">GC - Gold Futures</option>
+                                    <option value="SI">SI - Silver Futures</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div class="form-group trade-params">
+                            <label>Stop Loss (pips)</label>
+                            <input type="number" id="trade-sl" placeholder="20" min="1">
+                        </div>
+                        <div class="form-group trade-params">
+                            <label>Take Profit (pips)</label>
+                            <input type="number" id="trade-tp" placeholder="40" min="1">
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Execute Trade
+                        </button>
+                    </form>
+                    <div id="trade-result" class="trade-result"></div>
+                </section>
+            </div>
+
+            <!-- Trade History -->
+            <section class="section trade-history">
+                <h2><i class="fas fa-history"></i> Trade History</h2>
+                <div class="table-container">
+                    <table id="history-table">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Action</th>
+                                <th>Instrument</th>
+                                <th>Units</th>
+                                <th>Entry Price</th>
+                                <th>SL</th>
+                                <th>TP</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-body">
+                            <tr class="no-data">
+                                <td colspan="8">No trade history</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- TradingView Widget Script -->
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <script type="text/javascript">
+        // Initialize TradingView Chart for EUR/USD
+        new TradingView.widget({
+            "width": "100%",
+            "height": 500,
+            "symbol": "FX:EURUSD",
+            "interval": "15",
+            "timezone": "Etc/UTC",
+            "theme": "dark",
+            "style": "1",
+            "locale": "en",
+            "toolbar_bg": "#1e293b",
+            "enable_publishing": false,
+            "allow_symbol_change": true,
+            "container_id": "tradingview_eurusd",
+            "studies": [
+                "MASimple@tv-basicstudies",
+                "RSI@tv-basicstudies"
+            ],
+            "hide_side_toolbar": false,
+            "show_popup_button": true,
+            "popup_width": "1000",
+            "popup_height": "650"
+        });
+    </script>
+
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,158 @@
+# Forex Trading Bot Configuration
+# Copy this file to config.yaml and customize your settings
+
+# OANDA API Configuration
+oanda:
+  account_id: "YOUR_ACCOUNT_ID"
+  api_key: "YOUR_API_KEY"
+  environment: "practice"  # practice or live
+  base_url: "https://api-fxpractice.oanda.com"  # practice URL
+
+# TradingView Webhook Configuration
+tradingview:
+  enabled: true
+  webhook_port: 5000
+  webhook_secret: "YOUR_SECRET_KEY"  # Secret key to validate webhooks
+  allowed_ips: []  # Leave empty to allow all, or specify IPs
+
+# Trading Preferences
+trading:
+  # Asset classes to trade
+  enabled_assets:
+    forex: true
+    futures: true
+
+  # Default risk per trade (percentage of account)
+  risk_per_trade: 0.02  # 2%
+
+  # Maximum concurrent positions
+  max_positions: 5
+
+  # Maximum risk across all positions
+  max_total_risk: 0.06  # 6%
+
+  # Trading hours (24-hour format)
+  trading_hours:
+    enabled: false
+    start: "09:00"
+    end: "17:00"
+    timezone: "UTC"
+
+  # Position sizing method
+  position_sizing:
+    method: "risk_based"  # risk_based, fixed_size, kelly_criterion
+    fixed_size: 1000  # Units for fixed size method
+
+  # Stop loss and take profit defaults
+  default_sl_pips: 20
+  default_tp_pips: 40
+
+  # Trailing stop configuration
+  trailing_stop:
+    enabled: false
+    activation_pips: 20
+    trailing_pips: 10
+
+# Risk Management
+risk_management:
+  # Daily loss limit
+  daily_loss_limit: 0.05  # 5% of account
+
+  # Weekly loss limit
+  weekly_loss_limit: 0.10  # 10% of account
+
+  # Minimum account balance to trade
+  min_account_balance: 1000
+
+  # Auto-disable trading if limits hit
+  auto_disable_on_limit: true
+
+  # Maximum slippage tolerance (pips)
+  max_slippage: 2
+
+# Instrument-specific Settings
+instruments:
+  EUR_USD:
+    enabled: true
+    max_spread: 2  # pips
+    custom_risk: 0.015  # Override default risk
+    trading_sessions:
+      - "london"
+      - "new_york"
+
+  GBP_USD:
+    enabled: true
+    max_spread: 3
+
+  USD_JPY:
+    enabled: true
+    max_spread: 2
+
+  # Futures examples
+  NQ:  # Nasdaq Futures
+    enabled: true
+    asset_type: "futures"
+    max_spread: 5
+
+  ES:  # S&P 500 Futures
+    enabled: true
+    asset_type: "futures"
+    max_spread: 3
+
+# Strategy Settings
+strategies:
+  # Enable/disable specific strategies
+  trend_following:
+    enabled: true
+    timeframes: ["H1", "H4", "D1"]
+
+  mean_reversion:
+    enabled: false
+    timeframes: ["M15", "H1"]
+
+  breakout:
+    enabled: true
+    timeframes: ["H4", "D1"]
+
+# Logging Configuration
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  log_to_file: true
+  log_dir: "logs"
+  max_log_size_mb: 10
+  backup_count: 5
+
+# Database (Optional - for trade history)
+database:
+  enabled: true
+  type: "sqlite"  # sqlite or postgresql
+  sqlite_path: "data/trades.db"
+  # For PostgreSQL:
+  # host: "localhost"
+  # port: 5432
+  # database: "forex_bot"
+  # username: "user"
+  # password: "password"
+
+# Notifications (Future enhancement)
+notifications:
+  enabled: false
+  email:
+    enabled: false
+    smtp_server: "smtp.gmail.com"
+    smtp_port: 587
+    from_email: "your@email.com"
+    to_email: "your@email.com"
+    password: "your_password"
+
+  telegram:
+    enabled: false
+    bot_token: "YOUR_BOT_TOKEN"
+    chat_id: "YOUR_CHAT_ID"
+
+# Backtesting (Future enhancement)
+backtesting:
+  enabled: false
+  start_date: "2024-01-01"
+  end_date: "2024-12-31"
+  initial_balance: 10000
