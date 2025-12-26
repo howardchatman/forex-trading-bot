@@ -77,6 +77,15 @@ class ConfigLoader:
                 'level': 'INFO',
                 'log_to_file': True,
                 'log_dir': 'logs'
+            },
+            'instruments': {
+                'EUR_USD': {'enabled': True},
+                'GBP_USD': {'enabled': True},
+                'USD_JPY': {'enabled': True},
+                'USD_CHF': {'enabled': True},
+                'AUD_USD': {'enabled': True},
+                'USD_CAD': {'enabled': True},
+                'NZD_USD': {'enabled': True}
             }
         }
 
