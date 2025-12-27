@@ -443,6 +443,14 @@ tbody tr:hover {
     display: none;
 }
 
+.trade-result.working {
+    background: rgba(245, 158, 11, 0.2);
+    color: var(--warning-color);
+    border: 1px solid var(--warning-color);
+    display: block;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
 .trade-result.success {
     background: rgba(16, 185, 129, 0.2);
     color: var(--success-color);
@@ -517,5 +525,15 @@ tbody tr:hover {
 
     .two-column {
         grid-template-columns: 1fr;
+    }
+}
+
+/* Animations */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.6;
     }
 }

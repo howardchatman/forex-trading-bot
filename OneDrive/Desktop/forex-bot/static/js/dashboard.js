@@ -284,6 +284,13 @@ class TradingDashboard {
         const sl = document.getElementById('trade-sl').value;
         const tp = document.getElementById('trade-tp').value;
 
+        const resultDiv = document.getElementById('trade-result');
+
+        // Show "Working..." state
+        resultDiv.className = 'trade-result working';
+        resultDiv.textContent = `⏳ Working... Sending ${action.toUpperCase()} order for ${instrument} to OANDA...`;
+        resultDiv.style.display = 'block';
+
         const signal = {
             action,
             instrument,
@@ -299,27 +306,41 @@ class TradingDashboard {
             });
 
             const data = await response.json();
-            const resultDiv = document.getElementById('trade-result');
 
             if (data.status === 'success') {
                 resultDiv.className = 'trade-result success';
-                resultDiv.textContent = `✓ Trade executed: ${action.toUpperCase()} ${instrument}`;
+                resultDiv.textContent = `✓ Trade Executed: ${action.toUpperCase()} ${instrument}`;
+                // Add trade details if available
+                if (data.trade_id) {
+                    resultDiv.textContent += ` | Trade ID: ${data.trade_id}`;
+                }
+                if (data.entry_price) {
+                    resultDiv.textContent += ` | Entry: ${data.entry_price}`;
+                }
                 this.updateDashboard();
             } else {
                 resultDiv.className = 'trade-result error';
-                resultDiv.textContent = `✗ ${data.message || 'Trade failed'}`;
+                resultDiv.textContent = `✗ Trade Failed: ${data.message || 'Unknown error'}`;
+                // Show specific error details
+                if (data.error_code) {
+                    resultDiv.textContent += ` (Error: ${data.error_code})`;
+                }
             }
 
-            // Hide result after 5 seconds
+            // Hide result after 8 seconds
             setTimeout(() => {
                 resultDiv.style.display = 'none';
-            }, 5000);
+            }, 8000);
 
         } catch (error) {
             console.error('Error submitting trade:', error);
-            const resultDiv = document.getElementById('trade-result');
             resultDiv.className = 'trade-result error';
-            resultDiv.textContent = '✗ Error submitting trade';
+            resultDiv.textContent = '✗ Network Error: Unable to reach server';
+
+            // Hide result after 8 seconds
+            setTimeout(() => {
+                resultDiv.style.display = 'none';
+            }, 8000);
         }
     }
 
