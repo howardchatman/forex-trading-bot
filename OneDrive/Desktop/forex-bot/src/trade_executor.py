@@ -136,23 +136,50 @@ class TradeExecutor:
             f"SL: {stop_loss:.5f} TP: {take_profit:.5f}"
         )
 
-        response = self.oanda.place_market_order(
-            instrument=instrument,
-            units=position_size,
-            stop_loss=stop_loss,
-            take_profit=take_profit
-        )
+        try:
+            response = self.oanda.place_market_order(
+                instrument=instrument,
+                units=position_size,
+                stop_loss=stop_loss,
+                take_profit=take_profit
+            )
 
-        return {
-            'status': 'success',
-            'action': 'buy',
-            'instrument': instrument,
-            'units': position_size,
-            'entry_price': entry_price,
-            'stop_loss': stop_loss,
-            'take_profit': take_profit,
-            'response': response
-        }
+            # Extract trade ID if available
+            trade_id = None
+            if 'orderFillTransaction' in response:
+                trade_id = response['orderFillTransaction'].get('id')
+            elif 'orderCreateTransaction' in response:
+                trade_id = response['orderCreateTransaction'].get('id')
+
+            return {
+                'status': 'success',
+                'action': 'buy',
+                'instrument': instrument,
+                'units': position_size,
+                'entry_price': entry_price,
+                'stop_loss': stop_loss,
+                'take_profit': take_profit,
+                'trade_id': trade_id,
+                'response': response
+            }
+        except Exception as e:
+            error_msg = str(e)
+            logger.error(f"OANDA order failed: {error_msg}")
+
+            # Parse OANDA error message for common issues
+            if 'MARKET_HALTED' in error_msg or 'market is not tradeable' in error_msg:
+                error_msg = "Market is currently closed or halted"
+            elif 'Insufficient authorization' in error_msg:
+                error_msg = "Insufficient authorization to trade"
+            elif 'closeout' in error_msg.lower():
+                error_msg = "Order would trigger margin closeout"
+
+            return {
+                'status': 'error',
+                'message': error_msg,
+                'action': 'buy',
+                'instrument': instrument
+            }
 
     def _execute_sell(self, signal: Dict[str, Any]) -> Dict[str, Any]:
         """Execute a sell signal."""
@@ -226,23 +253,50 @@ class TradeExecutor:
             f"SL: {stop_loss:.5f} TP: {take_profit:.5f}"
         )
 
-        response = self.oanda.place_market_order(
-            instrument=instrument,
-            units=-position_size,  # Negative for sell
-            stop_loss=stop_loss,
-            take_profit=take_profit
-        )
+        try:
+            response = self.oanda.place_market_order(
+                instrument=instrument,
+                units=-position_size,  # Negative for sell
+                stop_loss=stop_loss,
+                take_profit=take_profit
+            )
 
-        return {
-            'status': 'success',
-            'action': 'sell',
-            'instrument': instrument,
-            'units': -position_size,
-            'entry_price': entry_price,
-            'stop_loss': stop_loss,
-            'take_profit': take_profit,
-            'response': response
-        }
+            # Extract trade ID if available
+            trade_id = None
+            if 'orderFillTransaction' in response:
+                trade_id = response['orderFillTransaction'].get('id')
+            elif 'orderCreateTransaction' in response:
+                trade_id = response['orderCreateTransaction'].get('id')
+
+            return {
+                'status': 'success',
+                'action': 'sell',
+                'instrument': instrument,
+                'units': -position_size,
+                'entry_price': entry_price,
+                'stop_loss': stop_loss,
+                'take_profit': take_profit,
+                'trade_id': trade_id,
+                'response': response
+            }
+        except Exception as e:
+            error_msg = str(e)
+            logger.error(f"OANDA order failed: {error_msg}")
+
+            # Parse OANDA error message for common issues
+            if 'MARKET_HALTED' in error_msg or 'market is not tradeable' in error_msg:
+                error_msg = "Market is currently closed or halted"
+            elif 'Insufficient authorization' in error_msg:
+                error_msg = "Insufficient authorization to trade"
+            elif 'closeout' in error_msg.lower():
+                error_msg = "Order would trigger margin closeout"
+
+            return {
+                'status': 'error',
+                'message': error_msg,
+                'action': 'sell',
+                'instrument': instrument
+            }
 
     def _execute_close(self, signal: Dict[str, Any]) -> Dict[str, Any]:
         """Execute a close signal."""
